@@ -1,0 +1,36 @@
+    在使用mybatis技术写sql代码时，会遇到一个问题，当数据的大小为0，数据类型为String时，在数据库中得到的值是null，无法返回前台。而前台需要的是一个值为0的数。在百度上看了很多的解决方案，包括了前台的处理方案及后台的处理方案，但都觉得都太复杂。其实只需要在拼sql的时候进行判断就可以解决这个问题。示例：
+修改前代码：
+SELECT
+			SUM(Volume * Commission) AS totalCommission,	
+			SUM(Volume * CloseProfitByTrade) AS totalCloseProfitByTrade,
+			SUM(Volume) AS netPosition
+		FROM
+			t_s_UserPositionDtl,
+			t_user
+		WHERE
+		  t_user.UserID = t_s_UserPositionDtl.UserID 
+修改后的代码：
+SELECT
+	CASE
+WHEN SUM(Volume * Commission) IS NOT NULL THEN
+	SUM(Volume * Commission)
+ELSE
+	0
+END AS totalCommission,
+ CASE
+WHEN SUM(Volume * CloseProfitByTrade) IS NOT NULL THEN
+	SUM(Volume * CloseProfitByTrade)
+ELSE
+	0
+END AS totalCloseProfitByTrade,
+ CASE
+WHEN SUM(Volume) IS NOT NULL THEN
+	SUM(Volume * Commission)
+ELSE
+	0
+END AS netPosition
+FROM
+	t_s_UserPositionDtl,
+	t_user
+WHERE
+	t_user.UserID = t_s_UserPositionDtl.UserID

@@ -1,0 +1,6 @@
+ 在本项目中，根据需求，需要实现一个时间一键加壹的功效。开始的时候想的是直接在前台得到数据，在js中直接以+1的方式进行实现。在实施后发现存在问题，时间在数据库中是char型，而直接+1是int型，在数据类型不匹配，就会出现2017-3-101的情况，与实际需求相差很大，而且在+1后无法实现修改，就算是在数据库中进行修改都存在问题。不得已，只能删掉本条数据，选择另外的方法。后来在网上找到了解决方式，经过修改，代码如下：
+ var d = new Date(s.info.copyCalendar.TradingDay);
+                var n = d.getTime() + 1 * 24 * 60 * 60 * 1000;
+                var result = new Date(n);
+	    		s.info.updataCalendar.tradingday = result.getFullYear() + "-" + (result.getMonth() + 1) + "-" + result.getDate();
+这个方法将数据类型不匹配解决了。

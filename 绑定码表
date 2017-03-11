@@ -1,0 +1,18 @@
+关于码表绑定的相关问题：
+码表中的与是与表中的数据相联系的，在数据中查询时，需要将两张表根据相关的字段进行连接，然后从表中进行查询，以查询得到的结果作为一张表，在这张表中进行相关
+数的查询。示例：
+SELECT
+	settle.*, param.ParamText as SettlementStatusName
+FROM
+	(
+		SELECT
+			*
+		FROM
+			t_paramlist
+		WHERE
+			ParamCode = 'settlement-status'
+	) AS param , t_settlementcontrol as settle
+WHERE
+	settle.SettlementStatus = param.ParamValue
+在前台展示时，用的是angularjs，前台页面展示的绑定数据的名称需要与sql中的名称相对应，示例：
+<td >{{calendar.SettlementStatusName}}</td>

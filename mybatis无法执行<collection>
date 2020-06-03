@@ -1,0 +1,35 @@
+在mybatis中无法执行<collection>的原因：
+
+	<resultMap id="map" type="java.util.Map">
+		<id property="zb_docid" column="zb_docid" />
+		<result property="zb_proname" column="zb_proname" />
+		<result property="zb_prono" column="zb_prono" />
+		<result property="tjr" column="tjr" />
+		<result property="tjrq" column="tjrq" />
+		<result property="memo" column="memo" />
+		<collection property="List" column="zb_docid" 
+			select="findByparentId">
+		</collection>
+	</resultMap>
+
+ <select id="findByparentId" resultType="Map">
+SELECT   id,  zb_proname, zb_prono, tjr, tjrq, status, beiz, zb_parentid, lx, dwgc, dw, sl, dj, zj, jzsqwcl, jzsqwce, bqbsl, 
+                unid, bqbse, bqspl, bqspe, fj
+FROM      fb_gcksp_mx
+WHERE   (1 = 1)  and  zb_parentid = #{zb_docid}    
+    order by tjrq desc
+  </select>
+
+返回的结果里没有联合查询的数据；即：<collection>联合查询中的参数，必须在select中，不论该字段是否有实际意义。原因：
+<collection/>中的column 表示你要拿现在查询出来的哪一条或者哪几条数据当做联合查询的条件。 
+可以看到我写的<collection/> 中的column 是zb_docid，但是我的主sql语句的select 结果集里并不包含zb_docid，mybatis找不到zb_docid这个字段，因此就会直接忽略掉以zb_docid 为查询条件的 <collection/> 这个组合查询。
+改正方式：
+在子查询中加入zb_docid
+ <select id="findByparentId" resultType="Map">
+SELECT   id, zb_docid, zb_proname, zb_prono, tjr, tjrq, status, beiz, zb_parentid, lx, dwgc, dw, sl, dj, zj, jzsqwcl, jzsqwce, bqbsl, 
+                unid, bqbse, bqspl, bqspe, fj
+FROM      fb_gcksp_mx
+WHERE   (1 = 1)  and  zb_parentid = #{zb_docid}    
+    order by tjrq desc
+  </select>
+
